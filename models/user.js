@@ -37,6 +37,4 @@ const UserSchema = Schema({
 
 
 
-module.exports = {
-
-}
+module.exports = model( 'User', UserSchema )
