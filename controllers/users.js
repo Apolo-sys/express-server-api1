@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const bcryptjs = require('bcryptjs');
+const {validationResult} = require("express-validator");
 
 
 function usersGet(req, res)  {
@@ -28,10 +29,21 @@ function usersPut(req, res)  {
 
 const usersPost = async (req, res) =>  {
 
+    const errors = validationResult(req)
+    if( !errors.isEmpty() ) {
+        return res.status(400).send(errors)
+    }
+
     const { name, mail, password, role } = req.body
     const user = new User({ name, mail, password, role })
 
     // Verify if mail exists
+    const mailExists = await User.findOne({ mail })
+    if ( mailExists ) {
+        return res.status(400).json({
+            msg: 'Mail already exists'
+        })
+    }
 
     // Crypt Password
     const salt = bcryptjs.genSaltSync(); // Generate Salt
