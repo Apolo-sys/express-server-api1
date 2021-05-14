@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 
+const { dbConnection } = require('../db/config')
+
 
 class Server {
     constructor() {
@@ -8,12 +10,19 @@ class Server {
         this.port = process.env.PORT
         this.usersRoutePath = '/api/users'
 
+        // DB Connection
+        this.connectDB().then(r => console.log("MongoDB Attached to Server"))
+
         // Middlewares
         this.middlewares()
 
-        // Rutas de mi app
+        // App Routes
 
         this.routes()
+    }
+
+    async connectDB() {
+        await dbConnection()
     }
 
     middlewares() {
@@ -21,10 +30,10 @@ class Server {
         // CORS
         this.app.use( cors() );
 
-        // Lectura y parseo del body
+        // Read body json
         this.app.use( express.json() )
 
-        // Directorio publico
+        // Public directory
         this.app.use( express.static('public') )
 
     }
